@@ -1,0 +1,407 @@
+<style>
+  :root{
+    --ink:#1f2a24; --paper:#f6f4ee; --paper-2:#ffffff;
+    --line:#d8d3c4; --line-strong:#b9b29b;
+    --green:#2f5d4f; --green-100:#e2ece7; --green-700:#1c3c31;
+    --rust:#a8462f; --rust-100:#f4e4de; --rust-700:#7a3120;
+    --muted:#6b6558; --gold:#b6892e;
+    --mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+    --serif:'Iowan Old Style','Georgia',serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --ink:#eae6da; --paper:#1b1b18; --paper-2:#222220;
+      --line:#3a382f; --line-strong:#4c4a3e;
+      --green:#7fbfa4; --green-100:#243a30; --green-700:#bfe6d3;
+      --rust:#e2917a; --rust-100:#3a2620; --rust-700:#f1baa9;
+      --muted:#a39d8c; --gold:#d9ab52;
+    }
+  }
+  *{box-sizing:border-box;}
+  .fcc-app{
+    background:var(--paper); color:var(--ink); font-family:var(--serif);
+    padding:1.75rem 1.5rem 2.5rem; border-radius:14px; border:1px solid var(--line);
+  }
+  .fcc-app h1{font-family:var(--serif);font-size:22px;font-weight:500;margin:0;letter-spacing:.2px;}
+  .fcc-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;}
+  .fcc-head{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;margin-bottom:1.5rem;border-bottom:1px solid var(--line);padding-bottom:1.1rem;}
+  .fcc-balance{font-family:var(--mono);font-size:26px;font-weight:600;}
+  .fcc-balance.neg{color:var(--rust-700);}
+  .fcc-balance.pos{color:var(--green-700);}
+
+  .fcc-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.75rem;}
+  .fcc-card{background:var(--paper-2);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem;}
+  .fcc-card .lbl{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 6px;}
+  .fcc-card .val{font-family:var(--mono);font-size:19px;font-weight:600;margin:0;}
+  .fcc-card .val.g{color:var(--green-700);} .fcc-card .val.r{color:var(--rust-700);}
+
+  .fcc-section-title{font-family:var(--serif);font-size:16px;font-weight:500;margin:0 0 10px;}
+
+  form.fcc-form{background:var(--paper-2);border:1px solid var(--line);border-radius:10px;padding:1rem 1.1rem 1.1rem;margin-bottom:2rem;}
+  .fcc-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;align-items:end;}
+  .fcc-field{display:flex;flex-direction:column;gap:4px;min-width:0;}
+  .fcc-field label{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);}
+  .fcc-field input,.fcc-field select{
+    font-family:var(--mono);font-size:13px;background:var(--paper);color:var(--ink);
+    border:1px solid var(--line-strong);border-radius:6px;padding:7px 8px;height:34px;width:100%;
+  }
+  .fcc-field input:focus,.fcc-field select:focus{outline:2px solid var(--gold);outline-offset:1px;}
+  .fcc-toggle{display:flex;border:1px solid var(--line-strong);border-radius:6px;overflow:hidden;height:34px;}
+  .fcc-toggle button{flex:1;border:none;background:var(--paper);color:var(--muted);font-family:var(--mono);font-size:12px;cursor:pointer;}
+  .fcc-toggle button.active.entrada{background:var(--green-100);color:var(--green-700);font-weight:600;}
+  .fcc-toggle button.active.saida{background:var(--rust-100);color:var(--rust-700);font-weight:600;}
+  .fcc-submit{
+    grid-column:span 6; margin-top:2px; height:36px; border-radius:6px; border:1px solid var(--ink);
+    background:var(--ink); color:var(--paper); font-family:var(--mono); font-size:12.5px;
+    letter-spacing:.05em; text-transform:uppercase; cursor:pointer;
+  }
+  .fcc-submit:active{transform:scale(.99);}
+  .fcc-err{grid-column:span 6;font-family:var(--mono);font-size:12px;color:var(--rust-700);margin:0;}
+
+  .fcc-legend{display:flex;gap:16px;font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-bottom:6px;}
+  .fcc-legend span{display:flex;align-items:center;gap:5px;}
+  .fcc-dot{width:9px;height:9px;border-radius:2px;display:inline-block;}
+
+  .fcc-range{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+  .fcc-range label{font-family:var(--mono);font-size:11px;color:var(--muted);}
+  .fcc-range select{font-family:var(--mono);font-size:12px;padding:4px 6px;border:1px solid var(--line-strong);border-radius:6px;background:var(--paper-2);color:var(--ink);width:auto;}
+
+  .fcc-charts-row{display:grid;grid-template-columns:1.15fr 1fr;gap:24px;margin:1.75rem 0 2rem;}
+  @media (max-width:560px){.fcc-charts-row{grid-template-columns:1fr;}}
+
+  table.fcc-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12.5px;}
+  table.fcc-table th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);border-bottom:1px solid var(--line-strong);padding:6px 8px;}
+  table.fcc-table td{padding:7px 8px;border-bottom:1px solid var(--line);}
+  table.fcc-table tr:last-child td{border-bottom:none;}
+  .fcc-val-e{color:var(--green-700);}
+  .fcc-val-s{color:var(--rust-700);}
+  .fcc-tag{font-size:10.5px;padding:2px 7px;border-radius:20px;background:var(--paper);border:1px solid var(--line-strong);color:var(--muted);}
+  .fcc-del{background:none;border:none;color:var(--muted);cursor:pointer;font-family:var(--mono);font-size:14px;padding:2px 6px;}
+  .fcc-del:hover{color:var(--rust-700);}
+  .fcc-table-wrap{max-height:340px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;background:var(--paper-2);}
+  .fcc-table-wrap table{margin:0;}
+  .fcc-table-wrap thead th{position:sticky;top:0;background:var(--paper-2);}
+  .fcc-empty{padding:1.5rem;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px;}
+  .fcc-status{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:6px;min-height:14px;}
+</style>
+
+<div class="fcc-app">
+  <div class="fcc-head">
+    <div>
+      <p class="fcc-eyebrow">Livro-caixa</p>
+      <h1>Fluxo de caixa — casa</h1>
+    </div>
+    <div style="text-align:right;">
+      <p class="fcc-eyebrow" style="margin-bottom:2px;">Saldo acumulado</p>
+      <p class="fcc-balance" id="fccBalance">—</p>
+    </div>
+  </div>
+
+  <div class="fcc-cards" id="fccCards"></div>
+
+  <p class="fcc-section-title">Novo lançamento</p>
+  <form class="fcc-form" id="fccForm">
+    <div class="fcc-grid">
+      <div class="fcc-field" style="grid-column:span 1;">
+        <label>Tipo</label>
+        <div class="fcc-toggle" id="fccTipoToggle">
+          <button type="button" data-tipo="entrada" class="active entrada">entrada</button>
+          <button type="button" data-tipo="saída" class="">saída</button>
+        </div>
+      </div>
+      <div class="fcc-field" style="grid-column:span 1;">
+        <label for="fccData">Data</label>
+        <input type="date" id="fccData" required>
+      </div>
+      <div class="fcc-field" style="grid-column:span 1;">
+        <label for="fccCategoria">Categoria</label>
+        <input type="text" id="fccCategoria" list="fccCatList" placeholder="casa" required>
+        <datalist id="fccCatList"></datalist>
+      </div>
+      <div class="fcc-field" style="grid-column:span 1;">
+        <label for="fccCategoria2">Subcategoria</label>
+        <input type="text" id="fccCategoria2" list="fccCat2List" placeholder="luz">
+        <datalist id="fccCat2List"></datalist>
+      </div>
+      <div class="fcc-field" style="grid-column:span 1;">
+        <label for="fccTipo2">Natureza</label>
+        <select id="fccTipo2">
+          <option value="fixa">fixa</option>
+          <option value="variavel">variável</option>
+        </select>
+      </div>
+      <div class="fcc-field" style="grid-column:span 1;">
+        <label for="fccValor">Valor (R$)</label>
+        <input type="number" id="fccValor" step="0.01" min="0" placeholder="0,00" required>
+      </div>
+      <div class="fcc-field" style="grid-column:span 4;">
+        <label for="fccDesc">Descrição (opcional)</label>
+        <input type="text" id="fccDesc" placeholder="ex: conta de luz março">
+      </div>
+      <div class="fcc-field" style="grid-column:span 2;justify-self:stretch;">
+        <label>&nbsp;</label>
+        <button type="submit" class="fcc-submit">Adicionar lançamento</button>
+      </div>
+      <p class="fcc-err" id="fccErr" style="display:none;"></p>
+    </div>
+    <p class="fcc-status" id="fccStatus"></p>
+  </form>
+
+  <p class="fcc-section-title">Movimento mensal</p>
+  <div class="fcc-range">
+    <label>Ver últimos</label>
+    <select id="fccRangeSel">
+      <option value="6">6 meses</option>
+      <option value="12" selected>12 meses</option>
+      <option value="9999">tudo</option>
+    </select>
+  </div>
+  <div class="fcc-legend">
+    <span><span class="fcc-dot" style="background:#2f5d4f;"></span>Entrada</span>
+    <span><span class="fcc-dot" style="background:#a8462f;"></span>Saída</span>
+    <span><span style="width:14px;height:2px;background:#b6892e;display:inline-block;margin-top:5px;"></span>Saldo do mês</span>
+  </div>
+  <div style="position:relative;width:100%;height:260px;margin-bottom:1.5rem;">
+    <canvas id="fccMonthlyChart" role="img" aria-label="Gráfico mensal de entradas, saídas e saldo do fluxo de caixa da casa"></canvas>
+  </div>
+
+  <div class="fcc-charts-row">
+    <div>
+      <p class="fcc-section-title">Gastos por categoria</p>
+      <div style="position:relative;width:100%;height:230px;">
+        <canvas id="fccCatChart" role="img" aria-label="Gastos totais por categoria"></canvas>
+      </div>
+    </div>
+    <div>
+      <p class="fcc-section-title">Fixa vs. variável</p>
+      <div style="position:relative;width:100%;height:180px;">
+        <canvas id="fccFvChart" role="img" aria-label="Proporção de gastos fixos versus variáveis"></canvas>
+      </div>
+      <div id="fccFvLegend" style="font-family:var(--mono);font-size:12px;display:flex;flex-direction:column;gap:6px;margin-top:10px;"></div>
+    </div>
+  </div>
+
+  <p class="fcc-section-title">Lançamentos</p>
+  <div class="fcc-table-wrap" id="fccTableWrap"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+(function(){
+  const SEED = __SEED_JSON__;
+
+  const fmtBRL = v => 'R$ ' + (v<0?'-':'') + Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const fmtBRL0 = v => 'R$ ' + (v<0?'-':'') + Math.abs(v).toLocaleString('pt-BR',{maximumFractionDigits:0});
+  const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const setStatus = (msg) => { const el=document.getElementById('fccStatus'); el.textContent = msg||''; if(msg){ setTimeout(()=>{ if(el.textContent===msg) el.textContent=''; }, 2500); } };
+
+  let tx = [];
+  let monthlyChart, catChart, fvChart;
+  let currentTipo = 'entrada';
+
+  async function loadData(){
+    try{
+      const res = await window.storage.get('transactions', false);
+      tx = res && res.value ? JSON.parse(res.value) : null;
+    }catch(e){ tx = null; }
+    if(!tx){
+      tx = SEED.map((t,i)=>({ id: 'seed_'+i, ...t }));
+      await saveData(true);
+    }
+    render();
+  }
+
+  async function saveData(silent){
+    try{
+      const r = await window.storage.set('transactions', JSON.stringify(tx), false);
+      if(!r) throw new Error('sem resposta');
+      if(!silent) setStatus('Salvo.');
+    }catch(e){
+      setStatus('Não foi possível salvar agora — tente novamente.');
+    }
+  }
+
+  function uniqueSorted(list){ return [...new Set(list.filter(Boolean))].sort(); }
+
+  function monthKey(dateStr){ const d=new Date(dateStr+'T00:00:00'); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
+  function monthLabel(key){ const [y,m]=key.split('-'); return MESES[parseInt(m,10)-1]+'/'+y.slice(2); }
+
+  function computeMonthly(){
+    const map = {};
+    tx.forEach(t=>{
+      const k = monthKey(t.data);
+      if(!map[k]) map[k] = {entrada:0, saida:0};
+      if(t.tipo==='entrada') map[k].entrada += t.valor; else map[k].saida += t.valor;
+    });
+    return Object.keys(map).sort().map(k=>({ key:k, label: monthLabel(k), entrada: Math.round(map[k].entrada*100)/100, saida: Math.round(map[k].saida*100)/100 }));
+  }
+
+  function computeCategorias(){
+    const map = {};
+    tx.filter(t=>t.tipo==='saída').forEach(t=>{
+      const c = t.categoria || 'outros';
+      map[c] = (map[c]||0) + t.valor;
+    });
+    return Object.entries(map).sort((a,b)=>b[1]-a[1]).map(([label,value])=>({label, value:Math.round(value*100)/100}));
+  }
+
+  function computeFixaVar(){
+    const map = {fixa:0, variavel:0};
+    tx.filter(t=>t.tipo==='saída').forEach(t=>{ const k = t.tipo2==='variavel'?'variavel':'fixa'; map[k]+=t.valor; });
+    return [{label:'fixa', value:Math.round(map.fixa*100)/100}, {label:'variável', value:Math.round(map.variavel*100)/100}];
+  }
+
+  function render(){
+    const totalEntrada = tx.filter(t=>t.tipo==='entrada').reduce((a,t)=>a+t.valor,0);
+    const totalSaida = tx.filter(t=>t.tipo==='saída').reduce((a,t)=>a+t.valor,0);
+    const saldo = totalEntrada - totalSaida;
+
+    document.getElementById('fccBalance').textContent = fmtBRL(saldo);
+    document.getElementById('fccBalance').className = 'fcc-balance ' + (saldo>=0?'pos':'neg');
+
+    const monthly = computeMonthly();
+    const curKey = monthly.length ? monthly[monthly.length-1].key : null;
+    const curMonth = monthly.find(m=>m.key===curKey);
+    const curSaldo = curMonth ? curMonth.entrada - curMonth.saida : 0;
+
+    document.getElementById('fccCards').innerHTML = `
+      <div class="fcc-card"><p class="lbl">Total entradas</p><p class="val g">${fmtBRL0(totalEntrada)}</p></div>
+      <div class="fcc-card"><p class="lbl">Total saídas</p><p class="val r">${fmtBRL0(totalSaida)}</p></div>
+      <div class="fcc-card"><p class="lbl">Lançamentos</p><p class="val">${tx.length}</p></div>
+      <div class="fcc-card"><p class="lbl">Saldo do mês atual</p><p class="val ${curSaldo>=0?'g':'r'}">${fmtBRL0(curSaldo)}</p></div>
+    `;
+
+    const cats = uniqueSorted(tx.map(t=>t.categoria));
+    const cats2 = uniqueSorted(tx.map(t=>t.categoria2));
+    document.getElementById('fccCatList').innerHTML = cats.map(c=>`<option value="${c}">`).join('');
+    document.getElementById('fccCat2List').innerHTML = cats2.map(c=>`<option value="${c}">`).join('');
+
+    buildMonthlyChart(monthly, parseInt(document.getElementById('fccRangeSel').value,10));
+    buildCatChart(computeCategorias());
+    buildFvChart(computeFixaVar());
+    buildTable();
+  }
+
+  function buildMonthlyChart(monthly, n){
+    const slice = monthly.slice(-n);
+    const labels = slice.map(m=>m.label);
+    const entrada = slice.map(m=>m.entrada);
+    const saida = slice.map(m=>m.saida);
+    const saldo = slice.map(m=>Math.round((m.entrada-m.saida)*100)/100);
+    if(monthlyChart) monthlyChart.destroy();
+    if(!slice.length){ return; }
+    monthlyChart = new Chart(document.getElementById('fccMonthlyChart'), {
+      data:{ labels, datasets:[
+        {type:'bar', label:'Entrada', data:entrada, backgroundColor:'#2f5d4f', borderRadius:4, order:2},
+        {type:'bar', label:'Saída', data:saida, backgroundColor:'#a8462f', borderRadius:4, order:2},
+        {type:'line', label:'Saldo', data:saldo, borderColor:'#b6892e', backgroundColor:'#b6892e', borderWidth:2, pointRadius:3, tension:.25, order:1}
+      ]},
+      options:{ responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtBRL(c.parsed.y)}} },
+        scales:{ x:{ ticks:{autoSkip:n>14, maxRotation:45, color:'#6b6558'}, grid:{display:false} },
+                 y:{ ticks:{color:'#6b6558', callback:v=>fmtBRL0(v)}, grid:{color:'#d8d3c4'} } }
+      }
+    });
+  }
+
+  const CAT_COLORS = ['#2f5d4f','#a8462f','#b6892e','#5a6b8c','#7a5c8c','#8c6b4f','#4f7a6b','#8c4f5c'];
+  function buildCatChart(cats){
+    if(catChart) catChart.destroy();
+    if(!cats.length){ return; }
+    catChart = new Chart(document.getElementById('fccCatChart'), {
+      type:'bar',
+      data:{ labels:cats.map(c=>c.label), datasets:[{ data:cats.map(c=>c.value), backgroundColor:cats.map((_,i)=>CAT_COLORS[i%CAT_COLORS.length]), borderRadius:4 }] },
+      options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>fmtBRL(c.parsed.x)}} },
+        scales:{ x:{ ticks:{color:'#6b6558', callback:v=>fmtBRL0(v)}, grid:{color:'#d8d3c4'} }, y:{ ticks:{color:'#6b6558'}, grid:{display:false} } }
+      }
+    });
+  }
+
+  function buildFvChart(fv){
+    if(fvChart) fvChart.destroy();
+    const total = fv.reduce((a,b)=>a+b.value,0);
+    if(!total){ document.getElementById('fccFvLegend').innerHTML=''; return; }
+    fvChart = new Chart(document.getElementById('fccFvChart'), {
+      type:'doughnut',
+      data:{ labels:fv.map(f=>f.label), datasets:[{ data:fv.map(f=>f.value), backgroundColor:['#2f5d4f','#b6892e'], borderColor:'#f6f4ee', borderWidth:2 }] },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>c.label+': '+fmtBRL(c.parsed)}} } }
+    });
+    document.getElementById('fccFvLegend').innerHTML = fv.map((f,i)=>{
+      const pct = total ? Math.round(f.value/total*100) : 0;
+      const color = ['#2f5d4f','#b6892e'][i];
+      return `<span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:2px;background:${color};flex-shrink:0;"></span>${f.label} — ${fmtBRL0(f.value)} (${pct}%)</span>`;
+    }).join('');
+  }
+
+  function buildTable(){
+    const wrap = document.getElementById('fccTableWrap');
+    if(!tx.length){ wrap.innerHTML = '<div class="fcc-empty">Nenhum lançamento ainda. Adicione o primeiro acima.</div>'; return; }
+    const sorted = [...tx].sort((a,b)=> b.data.localeCompare(a.data) || String(b.id).localeCompare(String(a.id)));
+    const rows = sorted.slice(0,80).map(t=>{
+      const [y,m,d] = t.data.split('-');
+      return `<tr>
+        <td>${d}/${m}/${y}</td>
+        <td><span class="fcc-tag">${t.categoria}${t.categoria2?' · '+t.categoria2:''}</span></td>
+        <td>${t.descricao||'—'}</td>
+        <td class="${t.tipo==='entrada'?'fcc-val-e':'fcc-val-s'}">${t.tipo==='entrada'?'+':'-'} ${fmtBRL(t.valor)}</td>
+        <td><button class="fcc-del" data-id="${t.id}" aria-label="Excluir lançamento" title="Excluir">✕</button></td>
+      </tr>`;
+    }).join('');
+    wrap.innerHTML = `<table class="fcc-table"><thead><tr><th>Data</th><th>Categoria</th><th>Descrição</th><th>Valor</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+    wrap.querySelectorAll('.fcc-del').forEach(btn=>{
+      btn.addEventListener('click', async (e)=>{
+        const id = e.currentTarget.getAttribute('data-id');
+        tx = tx.filter(t=>String(t.id)!==id);
+        render();
+        await saveData(true);
+        setStatus('Lançamento excluído.');
+      });
+    });
+  }
+
+  document.getElementById('fccTipoToggle').addEventListener('click', (e)=>{
+    const btn = e.target.closest('button[data-tipo]');
+    if(!btn) return;
+    currentTipo = btn.getAttribute('data-tipo');
+    document.querySelectorAll('#fccTipoToggle button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+
+  document.getElementById('fccRangeSel').addEventListener('change', ()=>{
+    buildMonthlyChart(computeMonthly(), parseInt(document.getElementById('fccRangeSel').value,10));
+  });
+
+  document.getElementById('fccData').valueAsDate = new Date();
+
+  document.getElementById('fccForm').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const errEl = document.getElementById('fccErr');
+    errEl.style.display='none';
+    const data = document.getElementById('fccData').value;
+    const categoria = document.getElementById('fccCategoria').value.trim().toLowerCase();
+    const categoria2 = document.getElementById('fccCategoria2').value.trim().toLowerCase();
+    const tipo2 = document.getElementById('fccTipo2').value;
+    const valorRaw = document.getElementById('fccValor').value;
+    const descricao = document.getElementById('fccDesc').value.trim();
+    const valor = parseFloat(valorRaw);
+
+    if(!data || !categoria || !valorRaw || isNaN(valor) || valor<=0){
+      errEl.textContent = 'Preencha data, categoria e um valor maior que zero.';
+      errEl.style.display='block';
+      return;
+    }
+
+    tx.push({ id: 'tx_'+Date.now()+'_'+Math.floor(Math.random()*1000), data, tipo: currentTipo, tipo2, categoria, categoria2, descricao, valor: Math.round(valor*100)/100 });
+    render();
+    document.getElementById('fccForm').reset();
+    document.getElementById('fccData').valueAsDate = new Date();
+    document.querySelectorAll('#fccTipoToggle button').forEach(b=>b.classList.remove('active'));
+    document.querySelector('#fccTipoToggle button[data-tipo="entrada"]').classList.add('active');
+    currentTipo = 'entrada';
+    await saveData();
+  });
+
+  loadData();
+})();
+</script>
